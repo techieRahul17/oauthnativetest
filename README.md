@@ -1,50 +1,184 @@
-# Welcome to your Expo app 👋
+# Google OAuth React Native Expo App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native application built with Expo that demonstrates Google OAuth authentication using `expo-auth-session`. This app allows users to sign in with their Google account and displays their profile information.
 
-## Get started
+## Features
 
-1. Install dependencies
+- 🔐 Google OAuth 2.0 authentication
+- 📱 Cross-platform (iOS, Android, Web)
+- 🎯 Built with Expo Go for easy development
+- 👤 Display user profile (name, email, picture)
+- 🛡️ TypeScript support for better development experience
 
+## Prerequisites
+
+- Node.js (v16 or higher)
+- Expo CLI
+- Expo Go app on your mobile device
+- Google Cloud Console account
+
+## Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd oauthtest
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Start the app
-
+3. **Start the development server**
    ```bash
-   npx expo start
+   npm start
    ```
 
-In the output, you'll find options to open the app in a
+4. **Open in Expo Go**
+   - Scan the QR code with your mobile device
+   - Or press 'a' for Android or 'i' for iOS simulator
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Google OAuth Setup
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 1. Create a Google Cloud Project
 
-## Get a fresh project
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Enable the Google+ API
 
-When you're ready, run:
+### 2. Create OAuth 2.0 Credentials
 
-```bash
-npm run reset-project
+1. Navigate to "APIs & Services" > "Credentials"
+2. Click "Create Credentials" > "OAuth 2.0 Client IDs"
+3. Choose "Web application" as the application type
+4. Add your redirect URI:
+   ```
+   https://auth.expo.io/@your-username/oauthtest
+   ```
+   Replace `your-username` with your Expo username and `oauthtest` with your app slug.
+
+### 3. Configure the App
+
+The app is already configured with the client ID. If you need to change it, update the `GOOGLE_CLIENT_ID` constant in `app/index.tsx`:
+
+```typescript
+const GOOGLE_CLIENT_ID = "your-client-id-here";
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project Structure
 
-## Learn more
+```
+oauthtest/
+├── app/
+│   ├── _layout.tsx          # App layout configuration
+│   ├── index.tsx            # Main app component with OAuth logic
+│   └── page.tsx             # Page wrapper
+├── assets/                  # Static assets (images, fonts)
+├── app.json                 # Expo configuration
+├── package.json             # Dependencies and scripts
+└── README.md               # This file
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+## How It Works
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+1. **Authentication Flow**: The app uses `expo-auth-session` to handle the OAuth flow
+2. **User Sign-in**: Users tap the "Sign in with Google" button
+3. **OAuth Redirect**: Google's authentication page opens in a web browser
+4. **Token Exchange**: After successful authentication, the app receives an access token
+5. **Profile Fetching**: The app fetches user profile data using the Google People API
+6. **Display**: User information (name, email, profile picture) is displayed
 
-## Join the community
+## Dependencies
 
-Join our community of developers creating universal apps.
+- `expo-auth-session`: Handles OAuth authentication
+- `expo-web-browser`: Manages web browser sessions
+- `expo-router`: Navigation and routing
+- `react-native-safe-area-context`: Safe area handling
+- `@expo/vector-icons`: Icon library
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Troubleshooting
+
+### Common Issues
+
+#### 1. "redirect_uri_mismatch" Error
+- **Cause**: The redirect URI in your Google Cloud Console doesn't match the one generated by Expo
+- **Solution**: 
+  1. Find your exact redirect URI by running:
+     ```javascript
+     import * as AuthSession from 'expo-auth-session';
+     console.log(AuthSession.makeRedirectUri({ useProxy: true }));
+     ```
+  2. Add this URI to your Google Cloud Console OAuth credentials
+
+#### 2. "This app's request is invalid"
+- **Cause**: Incorrect client ID or missing redirect URI
+- **Solution**: Verify your client ID and redirect URI configuration
+
+#### 3. App not working in Expo Go
+- **Cause**: Missing or incorrect configuration
+- **Solution**: Ensure you're using the latest version of Expo Go and all dependencies are properly installed
+
+### Debug Mode
+
+To enable debug logging, add this to your app:
+
+```typescript
+import * as AuthSession from 'expo-auth-session';
+console.log('Redirect URI:', AuthSession.makeRedirectUri({ useProxy: true }));
+```
+
+## Development
+
+### Available Scripts
+
+- `npm start`: Start the Expo development server
+- `npm run android`: Start on Android device/emulator
+- `npm run ios`: Start on iOS device/simulator
+- `npm run web`: Start in web browser
+- `npm run lint`: Run ESLint
+
+### Building for Production
+
+```bash
+# Build for Android
+expo build:android
+
+# Build for iOS
+expo build:ios
+```
+
+## Security Considerations
+
+- Never commit your actual client ID to version control in production
+- Use environment variables for sensitive configuration
+- Implement proper token storage and refresh mechanisms for production apps
+- Consider implementing sign-out functionality
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+If you encounter any issues or have questions:
+
+1. Check the [Expo documentation](https://docs.expo.dev/)
+2. Review the [expo-auth-session documentation](https://docs.expo.dev/versions/latest/sdk/auth-session/)
+3. Open an issue in this repository
+
+## Acknowledgments
+
+- [Expo](https://expo.dev/) for the amazing development platform
+- [Google OAuth 2.0](https://developers.google.com/identity/protocols/oauth2) for authentication
+- [React Native](https://reactnative.dev/) for the mobile framework
+
+## Authored by Rahul V S and Ramcharan S
